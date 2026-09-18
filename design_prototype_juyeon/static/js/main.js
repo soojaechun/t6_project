@@ -1,5 +1,5 @@
 // =========================================================
-// LANGUAGE DATA
+// TRANSLATIONS
 // =========================================================
 
 const translations = {
@@ -90,7 +90,6 @@ const translations = {
         projectDescription:
             "무역 데이터를 수집·정제·분석하여 반도체 수출 의사결정을 지원하는 Trade Control Tower 프로젝트입니다.",
 
-
         business: {
 
             market: {
@@ -138,11 +137,6 @@ const translations = {
         }
     },
 
-
-
-    // =========================================================
-    // ENGLISH
-    // =========================================================
 
     en: {
         navAbout: "About",
@@ -230,7 +224,6 @@ const translations = {
         projectDescription:
             "A Trade Control Tower project that collects, cleans and analyzes trade data to support semiconductor export decisions.",
 
-
         business: {
 
             market: {
@@ -278,11 +271,6 @@ const translations = {
         }
     },
 
-
-
-    // =========================================================
-    // CHINESE
-    // =========================================================
 
     zh: {
         navAbout: "关于 AXP",
@@ -370,7 +358,6 @@ const translations = {
         projectDescription:
             "通过收集、整理和分析贸易数据，为半导体出口决策提供支持的 Trade Control Tower 项目。",
 
-
         business: {
 
             market: {
@@ -418,11 +405,6 @@ const translations = {
         }
     },
 
-
-
-    // =========================================================
-    // JAPANESE
-    // =========================================================
 
     ja: {
         navAbout: "AXPについて",
@@ -510,7 +492,6 @@ const translations = {
         projectDescription:
             "貿易データを収集・整備・分析し、半導体輸出の意思決定を支援する Trade Control Tower プロジェクトです。",
 
-
         business: {
 
             market: {
@@ -561,21 +542,22 @@ const translations = {
 };
 
 
-
 // =========================================================
-// CURRENT STATE
+// STATE
 // =========================================================
 
 let currentLanguage =
     localStorage.getItem("axp-language") || "ko";
 
+let currentTheme =
+    localStorage.getItem("axp-theme") || "dark";
+
 let currentBusiness =
     "market";
 
 
-
 // =========================================================
-// LANGUAGE ELEMENTS
+// DOM
 // =========================================================
 
 const languageToggle =
@@ -590,6 +572,29 @@ const currentLanguageLabel =
 const desktopLanguage =
     document.getElementById("desktopLanguage");
 
+const themeToggle =
+    document.getElementById("themeToggle");
+
+const themeIcon =
+    document.getElementById("themeIcon");
+
+const businessStage =
+    document.getElementById("businessStage");
+
+const businessCursor =
+    document.getElementById("businessCursor");
+
+const businessNodes =
+    document.querySelectorAll(".business-node");
+
+const coreLabel =
+    document.getElementById("businessCoreLabel");
+
+const coreTitle =
+    document.getElementById("businessCoreTitle");
+
+const coreDescription =
+    document.getElementById("businessCoreDescription");
 
 
 // =========================================================
@@ -604,38 +609,73 @@ const languageLabels = {
 };
 
 
+// =========================================================
+// BUSINESS
+// =========================================================
+
+function activateBusiness(businessKey) {
+
+    currentBusiness =
+        businessKey;
+
+    const data =
+        translations[currentLanguage]
+            .business[businessKey];
+
+    if (!data) {
+        return;
+    }
+
+    coreLabel.textContent =
+        data.label;
+
+    coreTitle.textContent =
+        data.title;
+
+    coreDescription.textContent =
+        data.description;
+
+    businessNodes.forEach((node) => {
+
+        node.classList.toggle(
+            "active",
+            node.dataset.business ===
+                businessKey
+        );
+
+    });
+
+}
+
 
 // =========================================================
-// APPLY LANGUAGE
+// LANGUAGE
 // =========================================================
 
 function applyLanguage(language) {
 
-    currentLanguage = language;
+    currentLanguage =
+        language;
 
     localStorage.setItem(
         "axp-language",
         language
     );
 
-
-    // HTML lang 속성
     document.documentElement.lang =
         language === "zh"
             ? "zh-CN"
             : language;
 
 
-    // 일반 텍스트
     document
         .querySelectorAll("[data-i18n]")
         .forEach((element) => {
 
-            const key =
-                element.dataset.i18n;
-
             const value =
-                translations[language][key];
+                translations[language][
+                    element.dataset.i18n
+                ];
 
             if (value) {
                 element.textContent =
@@ -645,16 +685,14 @@ function applyLanguage(language) {
         });
 
 
-    // HTML 줄바꿈이 있는 텍스트
     document
         .querySelectorAll("[data-i18n-html]")
         .forEach((element) => {
 
-            const key =
-                element.dataset.i18nHtml;
-
             const value =
-                translations[language][key];
+                translations[language][
+                    element.dataset.i18nHtml
+                ];
 
             if (value) {
                 element.innerHTML =
@@ -670,15 +708,11 @@ function applyLanguage(language) {
     desktopLanguage.textContent =
         languageLabels[language];
 
-
-    // 현재 선택된 비즈니스 정보도 번역
     activateBusiness(
-        currentBusiness,
-        false
+        currentBusiness
     );
 
 }
-
 
 
 // =========================================================
@@ -733,23 +767,9 @@ document.addEventListener(
 );
 
 
-
 // =========================================================
 // THEME
 // =========================================================
-
-const themeToggle =
-    document.getElementById("themeToggle");
-
-const themeIcon =
-    document.getElementById("themeIcon");
-
-
-let currentTheme =
-    localStorage.getItem("axp-theme") ||
-    "dark";
-
-
 
 function applyTheme(theme) {
 
@@ -764,15 +784,12 @@ function applyTheme(theme) {
         theme
     );
 
-
-    // 현재 다크면 → 누르면 라이트
     themeIcon.textContent =
         theme === "dark"
             ? "☼"
             : "☾";
 
 }
-
 
 
 themeToggle.addEventListener(
@@ -792,172 +809,63 @@ themeToggle.addEventListener(
 );
 
 
-
-// =========================================================
-// BUSINESS
-// =========================================================
-
-const businessNodes =
-    document.querySelectorAll(
-        ".business-node"
-    );
-
-const coreLabel =
-    document.getElementById(
-        "businessCoreLabel"
-    );
-
-const coreTitle =
-    document.getElementById(
-        "businessCoreTitle"
-    );
-
-const coreDescription =
-    document.getElementById(
-        "businessCoreDescription"
-    );
-
-
-
-function activateBusiness(
-    businessKey,
-    updateClass = true
-) {
-
-    currentBusiness =
-        businessKey;
-
-
-    const businessData =
-        translations[currentLanguage]
-            .business[businessKey];
-
-
-    if (!businessData) {
-        return;
-    }
-
-
-    coreLabel.textContent =
-        businessData.label;
-
-    coreTitle.textContent =
-        businessData.title;
-
-    coreDescription.textContent =
-        businessData.description;
-
-
-    if (updateClass) {
-
-        businessNodes.forEach(
-            (node) => {
-
-                node.classList.toggle(
-                    "active",
-                    node.dataset.business ===
-                    businessKey
-                );
-
-            }
-        );
-
-    }
-
-}
-
-
-
 // =========================================================
 // BUSINESS NODE EVENTS
 // =========================================================
 
-businessNodes.forEach(
-    (node) => {
+businessNodes.forEach((node) => {
 
-        node.addEventListener(
-            "mouseenter",
-            () => {
+    node.addEventListener(
+        "mouseenter",
+        () => {
 
-                activateBusiness(
-                    node.dataset.business
-                );
+            activateBusiness(
+                node.dataset.business
+            );
 
-                businessStage.classList.add(
-                    "cursor-hover"
-                );
+            businessStage.classList.add(
+                "cursor-hover"
+            );
 
-            }
-        );
-
-
-        node.addEventListener(
-            "mouseleave",
-            () => {
-
-                businessStage.classList.remove(
-                    "cursor-hover"
-                );
-
-            }
-        );
+        }
+    );
 
 
-        node.addEventListener(
-            "click",
-            () => {
+    node.addEventListener(
+        "mouseleave",
+        () => {
 
-                activateBusiness(
-                    node.dataset.business
-                );
+            businessStage.classList.remove(
+                "cursor-hover"
+            );
 
-            }
-        );
+        }
+    );
 
 
-        node.addEventListener(
-            "focus",
-            () => {
+    node.addEventListener(
+        "click",
+        () => {
 
-                activateBusiness(
-                    node.dataset.business
-                );
+            activateBusiness(
+                node.dataset.business
+            );
 
-            }
-        );
+        }
+    );
 
-    }
-);
-
+});
 
 
 // =========================================================
-// BUSINESS CUSTOM CURSOR
+// CURSOR HALO
 // =========================================================
 
-const businessStage =
-    document.getElementById(
-        "businessStage"
-    );
+let targetX = 0;
+let targetY = 0;
 
-const businessCursor =
-    document.getElementById(
-        "businessCursor"
-    );
-
-const businessGlobe =
-    document.getElementById(
-        "businessGlobe"
-    );
-
-
-
-let cursorTargetX = 0;
-let cursorTargetY = 0;
-
-let cursorCurrentX = 0;
-let cursorCurrentY = 0;
-
+let currentX = 0;
+let currentY = 0;
 
 
 businessStage.addEventListener(
@@ -972,7 +880,6 @@ businessStage.addEventListener(
 );
 
 
-
 businessStage.addEventListener(
     "mouseleave",
     () => {
@@ -982,14 +889,8 @@ businessStage.addEventListener(
             "cursor-hover"
         );
 
-
-        // 지구본 원위치
-        businessGlobe.style.transform =
-            "translateX(-50%) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)";
-
     }
 );
-
 
 
 businessStage.addEventListener(
@@ -999,96 +900,868 @@ businessStage.addEventListener(
         const rect =
             businessStage.getBoundingClientRect();
 
-
-        // 커서 위치
-        cursorTargetX =
+        targetX =
             event.clientX -
             rect.left;
 
-        cursorTargetY =
+        targetY =
             event.clientY -
             rect.top;
-
-
-        // 중앙 기준 좌표
-        const centerX =
-            rect.width / 2;
-
-        const centerY =
-            rect.height / 2;
-
-
-        const normalizedX =
-            (cursorTargetX - centerX) /
-            centerX;
-
-        const normalizedY =
-            (cursorTargetY - centerY) /
-            centerY;
-
-
-        // 지구본 마우스 추적
-        const moveX =
-            normalizedX * 18;
-
-        const moveY =
-            normalizedY * 12;
-
-        const rotateX =
-            normalizedY * -7;
-
-        const rotateY =
-            normalizedX * 11;
-
-
-        businessGlobe.style.transform =
-            `
-            translateX(-50%)
-            translate3d(
-                ${moveX}px,
-                ${moveY}px,
-                0
-            )
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            `;
 
     }
 );
 
 
+function animateCursor() {
 
-// =========================================================
-// SMOOTH CUSTOM CURSOR
-// =========================================================
+    currentX +=
+        (targetX - currentX) *
+        0.20;
 
-function animateBusinessCursor() {
-
-    cursorCurrentX +=
-        (cursorTargetX - cursorCurrentX)
-        * 0.18;
-
-    cursorCurrentY +=
-        (cursorTargetY - cursorCurrentY)
-        * 0.18;
+    currentY +=
+        (targetY - currentY) *
+        0.20;
 
 
     businessCursor.style.left =
-        `${cursorCurrentX}px`;
+        `${currentX}px`;
 
     businessCursor.style.top =
-        `${cursorCurrentY}px`;
+        `${currentY}px`;
 
 
     requestAnimationFrame(
-        animateBusinessCursor
+        animateCursor
     );
 
 }
 
 
-animateBusinessCursor();
+animateCursor();
 
+
+// =========================================================
+// CREATE REAL WORLD MAP TEXTURE
+// 실제 국가 좌표 → Canvas → 3D Sphere Texture
+// =========================================================
+
+async function createWorldTexture(
+    renderer
+) {
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width =
+        2048;
+
+    canvas.height =
+        1024;
+
+
+    const context =
+        canvas.getContext("2d");
+
+
+    // Ocean
+    const oceanGradient =
+        context.createLinearGradient(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    oceanGradient.addColorStop(
+        0,
+        "#123e5b"
+    );
+
+    oceanGradient.addColorStop(
+        0.5,
+        "#0b304b"
+    );
+
+    oceanGradient.addColorStop(
+        1,
+        "#071e31"
+    );
+
+    context.fillStyle =
+        oceanGradient;
+
+    context.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    // =====================================================
+    // Real world data
+    // =====================================================
+
+    const response =
+        await fetch(
+            "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+        );
+
+    const world =
+        await response.json();
+
+
+    const countries =
+        topojson.feature(
+            world,
+            world.objects.countries
+        );
+
+
+    const borders =
+        topojson.mesh(
+            world,
+            world.objects.countries,
+            (a, b) => a !== b
+        );
+
+
+    // =====================================================
+    // Equirectangular projection
+    // =====================================================
+
+    const projection =
+        d3
+            .geoEquirectangular()
+            .fitExtent(
+                [
+                    [0, 0],
+                    [
+                        canvas.width,
+                        canvas.height
+                    ]
+                ],
+                {
+                    type: "Sphere"
+                }
+            );
+
+
+    const path =
+        d3
+            .geoPath(
+                projection,
+                context
+            );
+
+
+    // =====================================================
+    // Longitude / latitude
+    // =====================================================
+
+    context.save();
+
+    context.beginPath();
+
+    path(
+        d3.geoGraticule10()
+    );
+
+    context.strokeStyle =
+        "rgba(197, 232, 250, 0.12)";
+
+    context.lineWidth =
+        1;
+
+    context.stroke();
+
+    context.restore();
+
+
+    // =====================================================
+    // Continents
+    // =====================================================
+
+    context.save();
+
+    context.beginPath();
+
+    path(
+        countries
+    );
+
+
+    const landGradient =
+        context.createLinearGradient(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+    landGradient.addColorStop(
+        0,
+        "#e9f7ff"
+    );
+
+    landGradient.addColorStop(
+        0.45,
+        "#b7ddef"
+    );
+
+    landGradient.addColorStop(
+        1,
+        "#70aeca"
+    );
+
+
+    context.fillStyle =
+        landGradient;
+
+    context.fill();
+
+    context.restore();
+
+
+    // =====================================================
+    // Country Borders
+    // =====================================================
+
+    context.save();
+
+    context.beginPath();
+
+    path(
+        borders
+    );
+
+    context.strokeStyle =
+        "rgba(255,255,255,0.42)";
+
+    context.lineWidth =
+        0.8;
+
+    context.stroke();
+
+    context.restore();
+
+
+    // =====================================================
+    // Soft light
+    // =====================================================
+
+    const glow =
+        context.createRadialGradient(
+            500,
+            220,
+            0,
+            500,
+            220,
+            500
+        );
+
+    glow.addColorStop(
+        0,
+        "rgba(255,255,255,0.18)"
+    );
+
+    glow.addColorStop(
+        1,
+        "rgba(255,255,255,0)"
+    );
+
+    context.fillStyle =
+        glow;
+
+    context.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    // =====================================================
+    // Three Texture
+    // =====================================================
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.colorSpace =
+        THREE.SRGBColorSpace;
+
+    texture.anisotropy =
+        renderer.capabilities
+            .getMaxAnisotropy();
+
+    texture.needsUpdate =
+        true;
+
+    return texture;
+
+}
+
+
+// =========================================================
+// THREE.JS REAL EARTH
+// =========================================================
+
+async function initBusinessGlobe() {
+
+    const container =
+        document.getElementById(
+            "businessGlobeCanvas"
+        );
+
+
+    if (
+        !container ||
+        typeof THREE === "undefined" ||
+        typeof d3 === "undefined" ||
+        typeof topojson === "undefined"
+    ) {
+        return;
+    }
+
+
+    const width =
+        container.clientWidth;
+
+    const height =
+        container.clientHeight;
+
+
+    // =====================================================
+    // Scene
+    // =====================================================
+
+    const scene =
+        new THREE.Scene();
+
+
+    // =====================================================
+    // Camera
+    // =====================================================
+
+    const camera =
+        new THREE.PerspectiveCamera(
+            34,
+            width / height,
+            0.1,
+            100
+        );
+
+
+    camera.position.z =
+        5.6;
+
+
+    // =====================================================
+    // Renderer
+    // =====================================================
+
+    const renderer =
+        new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+
+
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
+    );
+
+
+    renderer.setSize(
+        width,
+        height
+    );
+
+
+    renderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+
+
+    container.innerHTML =
+        "";
+
+
+    container.appendChild(
+        renderer.domElement
+    );
+
+
+    // =====================================================
+    // Globe Group
+    // =====================================================
+
+    const globeGroup =
+        new THREE.Group();
+
+
+    scene.add(
+        globeGroup
+    );
+
+
+    // =====================================================
+    // Actual Map Texture
+    // =====================================================
+
+    let worldTexture;
+
+
+    try {
+
+        worldTexture =
+            await createWorldTexture(
+                renderer
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "World map loading failed:",
+            error
+        );
+
+    }
+
+
+    // =====================================================
+    // Earth
+    // =====================================================
+
+    const sphereGeometry =
+        new THREE.SphereGeometry(
+            1.56,
+            128,
+            128
+        );
+
+
+    const earthMaterial =
+        new THREE.MeshPhysicalMaterial({
+
+            color:
+                new THREE.Color(
+                    "#d6efff"
+                ),
+
+            map:
+                worldTexture || null,
+
+            roughness:
+                0.26,
+
+            metalness:
+                0.02,
+
+            clearcoat:
+                1,
+
+            clearcoatRoughness:
+                0.08,
+
+            transmission:
+                0.05,
+
+            thickness:
+                0.5
+
+        });
+
+
+    const earth =
+        new THREE.Mesh(
+            sphereGeometry,
+            earthMaterial
+        );
+
+
+    globeGroup.add(
+        earth
+    );
+
+
+    // =====================================================
+    // Glass Shell
+    // =====================================================
+
+    const glassGeometry =
+        new THREE.SphereGeometry(
+            1.62,
+            96,
+            96
+        );
+
+
+    const glassMaterial =
+        new THREE.MeshPhysicalMaterial({
+
+            color:
+                new THREE.Color(
+                    "#bce7ff"
+                ),
+
+            transparent:
+                true,
+
+            opacity:
+                0.09,
+
+            roughness:
+                0,
+
+            transmission:
+                0.60,
+
+            clearcoat:
+                1,
+
+            side:
+                THREE.FrontSide
+
+        });
+
+
+    const glassShell =
+        new THREE.Mesh(
+            glassGeometry,
+            glassMaterial
+        );
+
+
+    globeGroup.add(
+        glassShell
+    );
+
+
+    // =====================================================
+    // Wireframe
+    // =====================================================
+
+    const wireGeometry =
+        new THREE.SphereGeometry(
+            1.585,
+            32,
+            20
+        );
+
+
+    const wireMaterial =
+        new THREE.MeshBasicMaterial({
+
+            color:
+                new THREE.Color(
+                    "#d6f2ff"
+                ),
+
+            wireframe:
+                true,
+
+            transparent:
+                true,
+
+            opacity:
+                0.10
+
+        });
+
+
+    const wireSphere =
+        new THREE.Mesh(
+            wireGeometry,
+            wireMaterial
+        );
+
+
+    globeGroup.add(
+        wireSphere
+    );
+
+
+    // =====================================================
+    // Atmosphere
+    // =====================================================
+
+    const atmosphereGeometry =
+        new THREE.SphereGeometry(
+            1.70,
+            96,
+            96
+        );
+
+
+    const atmosphereMaterial =
+        new THREE.MeshBasicMaterial({
+
+            color:
+                new THREE.Color(
+                    "#6cc9ff"
+                ),
+
+            transparent:
+                true,
+
+            opacity:
+                0.065,
+
+            side:
+                THREE.BackSide
+
+        });
+
+
+    const atmosphere =
+        new THREE.Mesh(
+            atmosphereGeometry,
+            atmosphereMaterial
+        );
+
+
+    globeGroup.add(
+        atmosphere
+    );
+
+
+    // =====================================================
+    // Lights
+    // =====================================================
+
+    const ambientLight =
+        new THREE.AmbientLight(
+            "#d9f1ff",
+            1.25
+        );
+
+
+    scene.add(
+        ambientLight
+    );
+
+
+    const keyLight =
+        new THREE.PointLight(
+            "#e8f8ff",
+            2.0,
+            20
+        );
+
+
+    keyLight.position.set(
+        4,
+        3,
+        6
+    );
+
+
+    scene.add(
+        keyLight
+    );
+
+
+    const sideLight =
+        new THREE.PointLight(
+            "#5cc4ff",
+            1.3,
+            20
+        );
+
+
+    sideLight.position.set(
+        -4,
+        -1,
+        4
+    );
+
+
+    scene.add(
+        sideLight
+    );
+
+
+    // =====================================================
+    // Initial earth orientation
+    // Europe / Africa / Asia area
+    // =====================================================
+
+    globeGroup.rotation.y =
+        -0.55;
+
+    globeGroup.rotation.x =
+        0.10;
+
+
+    // =====================================================
+    // Mouse Interaction
+    // =====================================================
+
+    let targetRotX =
+        0.10;
+
+    let targetRotZ =
+        0;
+
+    let currentRotX =
+        0.10;
+
+    let currentRotZ =
+        0;
+
+
+    businessStage.addEventListener(
+        "mousemove",
+        (event) => {
+
+            const rect =
+                businessStage
+                    .getBoundingClientRect();
+
+
+            const normalizedX =
+                (
+                    event.clientX -
+                    rect.left
+                ) /
+                rect.width *
+                2 -
+                1;
+
+
+            const normalizedY =
+                -(
+                    (
+                        event.clientY -
+                        rect.top
+                    ) /
+                    rect.height *
+                    2 -
+                    1
+                );
+
+
+            targetRotX =
+                0.10 +
+                normalizedY *
+                0.15;
+
+
+            targetRotZ =
+                normalizedX *
+                0.10;
+
+        }
+    );
+
+
+    businessStage.addEventListener(
+        "mouseleave",
+        () => {
+
+            targetRotX =
+                0.10;
+
+            targetRotZ =
+                0;
+
+        }
+    );
+
+
+    // =====================================================
+    // Animation
+    // =====================================================
+
+    function animateGlobe() {
+
+        requestAnimationFrame(
+            animateGlobe
+        );
+
+
+        currentRotX +=
+            (
+                targetRotX -
+                currentRotX
+            ) *
+            0.045;
+
+
+        currentRotZ +=
+            (
+                targetRotZ -
+                currentRotZ
+            ) *
+            0.045;
+
+
+        globeGroup.rotation.y +=
+            0.0024;
+
+
+        globeGroup.rotation.x =
+            currentRotX;
+
+
+        globeGroup.rotation.z =
+            currentRotZ;
+
+
+        renderer.render(
+            scene,
+            camera
+        );
+
+    }
+
+
+    animateGlobe();
+
+
+    // =====================================================
+    // Resize
+    // =====================================================
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            const newWidth =
+                container.clientWidth;
+
+            const newHeight =
+                container.clientHeight;
+
+
+            renderer.setSize(
+                newWidth,
+                newHeight
+            );
+
+
+            camera.aspect =
+                newWidth /
+                newHeight;
+
+
+            camera.updateProjectionMatrix();
+
+        }
+    );
+
+}
 
 
 // =========================================================
@@ -1106,3 +1779,5 @@ applyLanguage(
 activateBusiness(
     "market"
 );
+
+initBusinessGlobe();
